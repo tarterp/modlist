@@ -29,7 +29,6 @@
 // PKDDEBUGGER_DATA64.Header.OwnerTag
 #define KDBG_OWNERTAG 'GBDK'
 
-
 NTSTATUS DriverEntry(IN PDRIVER_OBJECT DriverObject, IN PUNICODE_STRING RegistryPath);
 NTSTATUS DispatchCreateClose(PDEVICE_OBJECT DeviceObject, PIRP Irp);
 VOID DriverUnload( PDRIVER_OBJECT DriverObject);
@@ -38,8 +37,7 @@ VOID DriverUnload( PDRIVER_OBJECT DriverObject);
 #pragma alloc_text(INIT,DriverEntry)
 #endif
 
-
-#define MODULE_DUMP_DEVICE_NAME    L"\\Device\\GhostHook"
+#define MODULE_DUMP_DEVICE_NAME    L"\\Device\\ModDump"
 
 PIMAGE_DOS_HEADER GetKernelBase()
 {
@@ -146,20 +144,13 @@ DriverUnload(
     IoDeleteDevice(DriverObject->DeviceObject);
 } // DriverUnload()
 
-
 NTSTATUS
 DispatchCreateClose(
     PDEVICE_OBJECT DeviceObject,
     PIRP Irp)
 {
-    DBGPRINT(DPFLTR_TRACE_LEVEL, "%s DeviceObject=%p Irp=%p\n", __FUNCTION__, DeviceObject, Irp);
-
-    // Step #6 : Setup the appropriate values in IRP.IoStatus
     Irp->IoStatus.Information = 0;
     Irp->IoStatus.Status = STATUS_SUCCESS;
-
-    // Step #7 : Complete the IRP (IoCompleteRequest())
     IoCompleteRequest(Irp, IO_NO_INCREMENT);
-
     return STATUS_SUCCESS;
 } // DispatchCreateClose()
